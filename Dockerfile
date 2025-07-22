@@ -13,9 +13,11 @@ COPY . .
 RUN yarn build
 
 # Production stage
-FROM node:20-bullseye-slim
+FROM node:18-alpine
 
 WORKDIR /app
+
+RUN apk add --no-cache wget
 
 COPY package*.json ./
 COPY yarn.lock ./
