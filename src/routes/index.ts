@@ -11,6 +11,11 @@ router.use(cors);
 const customerController =
   container.get<CustomerController>("CustomerController");
 
+// Health check route
+router.get("/health", (_, res) => {
+  res.status(200).json({ status: "ok", timestamp: new Date().toISOString() });
+});
+
 router.post("/customer/create", async (req, res) => {
   try {
     const body = req.body;
