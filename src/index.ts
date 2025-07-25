@@ -5,7 +5,7 @@ import { routes } from "./routes";
 import "dotenv/config";
 
 async function main() {
-  const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3002;
+  const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
   try {
     const app = express();
     app.use(express.json());
