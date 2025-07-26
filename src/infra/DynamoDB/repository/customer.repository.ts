@@ -6,7 +6,9 @@ import {
 import { CustomerRepository } from "../../../repository/customer.repository.interface";
 import { CreateUserRequestDTO } from "../../../dtos/create-customer.dto";
 import { Customer } from "../../../models/customer.model";
+import { injectable } from "inversify";
 
+@injectable()
 export class CustomerRepositoryImpl implements CustomerRepository {
   private tableName: string;
   constructor(private client: DynamoDBDocumentClient) {
