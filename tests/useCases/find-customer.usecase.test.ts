@@ -1,6 +1,7 @@
 import { FindCustomerUseCase } from "../../src/useCases/find-customer";
 import { CustomerRepository } from "../../src/repository/customer.repository.interface";
 import { Customer } from "../../src/models/customer.model";
+import { CustomError } from "../../src/errors/custom.error";
 
 describe("FindCustomerUseCase", () => {
   let findCustomerUseCase: FindCustomerUseCase;
@@ -35,13 +36,20 @@ describe("FindCustomerUseCase", () => {
       expect(result).toEqual(expectedCustomer);
     });
 
-    it("deve lançar erro quando cliente não é encontrado", async () => {
+    it("deve lançar CustomError quando cliente não é encontrado", async () => {
       const cpf = "999.999.999-99";
       mockRepository.findOne.mockResolvedValue(undefined);
 
-      await expect(findCustomerUseCase.findCustomer(cpf)).rejects.toThrow(
-        `Usuário com cpf ${cpf} não encontrado!`
-      );
+      try {
+        await findCustomerUseCase.findCustomer(cpf);
+        fail("Deveria ter lançado um erro");
+      } catch (error) {
+        expect(error).toBeInstanceOf(CustomError);
+        expect(error instanceof CustomError && error.message).toBe(
+          `Usuário com cpf ${cpf} não encontrado!`
+        );
+        expect(error instanceof CustomError && error.status).toBe(404);
+      }
 
       expect(mockRepository.findOne).toHaveBeenCalledWith({ cpf });
       expect(mockRepository.findOne).toHaveBeenCalledTimes(1);
@@ -57,24 +65,6 @@ describe("FindCustomerUseCase", () => {
 
       expect(mockRepository.findOne).toHaveBeenCalledWith({ cpf: validCpf });
       expect(mockRepository.findOne).toHaveBeenCalledTimes(1);
-    });
-
-    it("deve lançar erro com formato JSON correto quando cliente não encontrado", async () => {
-      const cpf = "111.111.111-11";
-      mockRepository.findOne.mockResolvedValue(undefined);
-
-      try {
-        await findCustomerUseCase.findCustomer(cpf);
-        fail("Deveria ter lançado um erro");
-      } catch (error: any) {
-        const errorData = JSON.parse(error.message);
-        expect(errorData.message).toBe(
-          `Usuário com cpf ${cpf} não encontrado!`
-        );
-        expect(errorData.status).toBe(404);
-      }
-
-      expect(mockRepository.findOne).toHaveBeenCalledWith({ cpf });
     });
 
     it("deve retornar o customer exato do repositório", async () => {

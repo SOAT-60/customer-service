@@ -6,6 +6,7 @@ import {
 import { CreateUserRequestDTO } from "../../src/dtos/create-customer.dto";
 import { Customer } from "../../src/models/customer.model";
 import { mockDeep } from "jest-mock-extended";
+import { CustomError } from "../../src/errors/custom.error";
 
 describe("CustomerController", () => {
   let customerController: CustomerController;
@@ -55,14 +56,19 @@ describe("CustomerController", () => {
         email: "joao@exemplo.com",
       };
 
-      const errorMessage = "Usuário já existe!";
-      mockCreateCustomerUseCase.createCustomer.mockRejectedValue(
-        new Error(errorMessage)
-      );
+      const customError = new CustomError("Usuário já existe!", 400);
+      mockCreateCustomerUseCase.createCustomer.mockRejectedValue(customError);
 
-      await expect(
-        customerController.createCustomer(customerData)
-      ).rejects.toThrow(errorMessage);
+      try {
+        await customerController.createCustomer(customerData);
+        fail("Deveria ter lançado um erro");
+      } catch (error) {
+        expect(error).toBeInstanceOf(CustomError);
+        expect(error instanceof CustomError && error.message).toBe(
+          "Usuário já existe!"
+        );
+        expect(error instanceof CustomError && error.status).toBe(400);
+      }
 
       expect(mockCreateCustomerUseCase.createCustomer).toHaveBeenCalledWith(
         customerData
@@ -90,16 +96,24 @@ describe("CustomerController", () => {
       expect(result).toEqual(expectedCustomer);
     });
 
-    it("deve propagar erro do use case quando cliente não é encontrado", async () => {
+    it("deve propagar CustomError quando cliente não é encontrado", async () => {
       const cpf = "999.999.999-99";
-      const errorMessage = `Usuário com cpf ${cpf} não encontrado!`;
-      mockFindCustomerUseCase.findCustomer.mockRejectedValue(
-        new Error(errorMessage)
+      const customError = new CustomError(
+        `Usuário com cpf ${cpf} não encontrado!`,
+        404
       );
+      mockFindCustomerUseCase.findCustomer.mockRejectedValue(customError);
 
-      await expect(customerController.getCustomer(cpf)).rejects.toThrow(
-        errorMessage
-      );
+      try {
+        await customerController.getCustomer(cpf);
+        fail("Deveria ter lançado um erro");
+      } catch (error) {
+        expect(error).toBeInstanceOf(CustomError);
+        expect(error instanceof CustomError && error.message).toBe(
+          `Usuário com cpf ${cpf} não encontrado!`
+        );
+        expect(error instanceof CustomError && error.status).toBe(404);
+      }
 
       expect(mockFindCustomerUseCase.findCustomer).toHaveBeenCalledWith(cpf);
       expect(mockFindCustomerUseCase.findCustomer).toHaveBeenCalledTimes(1);
