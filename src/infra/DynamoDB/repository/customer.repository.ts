@@ -1,3 +1,4 @@
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import {
   DynamoDBDocumentClient,
   PutCommand,
@@ -11,8 +12,12 @@ import { injectable } from "inversify";
 @injectable()
 export class CustomerRepositoryImpl implements CustomerRepository {
   private tableName: string;
-  constructor(private client: DynamoDBDocumentClient) {
+  private client: DynamoDBDocumentClient;
+
+  constructor() {
     this.tableName = "customers";
+    const ddbClient = new DynamoDBClient({ region: process.env.AWS_REGION });
+    this.client = DynamoDBDocumentClient.from(ddbClient);
   }
 
   async save(data: CreateUserRequestDTO) {

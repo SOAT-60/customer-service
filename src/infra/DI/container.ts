@@ -10,6 +10,7 @@ import { CreateCustomerUseCase } from "../../useCases/create-customer";
 import { FindCustomerUseCase } from "../../useCases/find-customer";
 
 const container = new Container();
+
 container.bind<CustomerController>("CustomerController").to(CustomerController);
 container
   .bind<CustomerRepository>("CustomerRepository")
@@ -20,4 +21,5 @@ container
 container
   .bind<IFindCustomerUseCase>("FindCustomerUseCase")
   .to(FindCustomerUseCase);
+
 export { container };
