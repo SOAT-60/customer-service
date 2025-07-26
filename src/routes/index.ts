@@ -59,12 +59,7 @@ router.get("/customer/:cpf", async (req, res) => {
       .status(200)
       .json({ message: "Cliente recuperado com sucesso!", response: customer });
   } catch (error: any) {
-    // Verifica se o erro tem as propriedades do CustomError
-    if (
-      error &&
-      typeof error.status === "number" &&
-      typeof error.message === "string"
-    ) {
+    if (error instanceof CustomError) {
       return res.status(error.status).json({ message: error.message });
     }
     res.status(500).json({ message: "Erro ao buscar cliente" });
