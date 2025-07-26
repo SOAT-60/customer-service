@@ -4,6 +4,7 @@ import { container } from "../infra/DI/container";
 import { CustomerController } from "../controller";
 import { CreateUserValidator } from "../dtos/create-customer.dto";
 import { ZodError } from "zod";
+import { CustomError } from "../errors/custom.error";
 
 const router = Router();
 router.use(cors());
@@ -25,13 +26,8 @@ router.post("/customer/create", async (req, res) => {
       .status(200)
       .json({ message: "Cliente criado com sucesso!", response: customer });
   } catch (error: any) {
-    if (error && error.message) {
-      const decodedError = JSON.parse(error.message) as {
-        message: string;
-        status: number;
-      };
-
-      res.status(decodedError.status).json({ message: decodedError.message });
+    if (error instanceof CustomError) {
+      return res.status(error.status).json({ message: error.message });
     } else if (error instanceof ZodError) {
       return res.status(400).json({
         message: "Erro validação",
@@ -55,13 +51,8 @@ router.get("/customer/:cpf", async (req, res) => {
       .status(200)
       .json({ message: "Cliente recuperado com sucesso!", response: customer });
   } catch (error: any) {
-    if (error && error.message) {
-      const decodedError = JSON.parse(error.message) as {
-        message: string;
-        status: number;
-      };
-
-      res.status(decodedError.status).json({ message: decodedError.message });
+    if (error instanceof CustomError) {
+      return res.status(error.status).json({ message: error.message });
     }
     res.status(500).json({ message: "Erro ao buscar cliente" });
   }

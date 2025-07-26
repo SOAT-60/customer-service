@@ -2,6 +2,7 @@ import { inject, injectable } from "inversify";
 import { IFindCustomerUseCase } from "./interfaces/customer.usecase.interface";
 import { CustomerRepository } from "../repository/customer.repository.interface";
 import { Customer } from "../models/customer.model";
+import { CustomError } from "../errors/custom.error";
 
 @injectable()
 export class FindCustomerUseCase implements IFindCustomerUseCase {
@@ -15,12 +16,7 @@ export class FindCustomerUseCase implements IFindCustomerUseCase {
       const product = await this.repository.findOne({ cpf });
 
       if (!product) {
-        throw new Error(
-          JSON.stringify({
-            message: `Usuário com cpf ${cpf} não encontrado!`,
-            status: 404,
-          })
-        );
+        throw new CustomError(`Usuário com cpf ${cpf} não encontrado!`, 404);
       }
 
       return product;
