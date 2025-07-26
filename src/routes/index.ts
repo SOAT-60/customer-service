@@ -26,7 +26,12 @@ router.post("/customer/create", async (req, res) => {
       .status(200)
       .json({ message: "Cliente criado com sucesso!", response: customer });
   } catch (error: any) {
-    if (error instanceof CustomError) {
+    // Verifica se o erro tem as propriedades do CustomError
+    if (
+      error &&
+      typeof error.status === "number" &&
+      typeof error.message === "string"
+    ) {
       return res.status(error.status).json({ message: error.message });
     } else if (error instanceof ZodError) {
       return res.status(400).json({
@@ -34,6 +39,7 @@ router.post("/customer/create", async (req, res) => {
         errors: error.message,
       });
     }
+
     res.status(500).json({ message: "Erro ao criar cliente" });
   }
 });
@@ -43,7 +49,9 @@ router.get("/customer/:cpf", async (req, res) => {
     const { cpf } = req.params;
 
     if (typeof cpf !== "string")
-      res.status(400).json({ message: "Obrigatório o envio do ID do cliente" });
+      return res
+        .status(400)
+        .json({ message: "Obrigatório o envio do ID do cliente" });
 
     const customer = await customerController.getCustomer(cpf);
 
@@ -51,7 +59,12 @@ router.get("/customer/:cpf", async (req, res) => {
       .status(200)
       .json({ message: "Cliente recuperado com sucesso!", response: customer });
   } catch (error: any) {
-    if (error instanceof CustomError) {
+    // Verifica se o erro tem as propriedades do CustomError
+    if (
+      error &&
+      typeof error.status === "number" &&
+      typeof error.message === "string"
+    ) {
       return res.status(error.status).json({ message: error.message });
     }
     res.status(500).json({ message: "Erro ao buscar cliente" });
