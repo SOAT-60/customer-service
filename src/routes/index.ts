@@ -6,7 +6,7 @@ import { CreateUserValidator } from "../dtos/create-customer.dto";
 import { ZodError } from "zod";
 
 const router = Router();
-router.use(cors);
+router.use(cors());
 
 const customerController =
   container.get<CustomerController>("CustomerController");
