@@ -64,10 +64,10 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             docker pull dougb60/customer-service:latest
-            docker stop ustomer-service || true
-            docker rm ustomer-service || true
+            docker stop customer-service || true
+            docker rm customer-service || true
             docker run -d \
-              --name ustomer-service \
+              --name customer-service \
               -p 3000:3000 \
               --network microservices-network \
               dougb60/customer-service:latest
