@@ -78,4 +78,7 @@ jobs:
               --name customer-service \
               -p 3000:3000 \
               --network microservices-network \
+              -e AWS_REGION=us-east-2 \
+              -e AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
+              -e AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
               dougb60/customer-service:latest
