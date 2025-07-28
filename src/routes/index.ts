@@ -12,7 +12,9 @@ const customerController =
   container.get<CustomerController>("CustomerController");
 
 router.get("/health", (_, res) => {
-  res.status(200).json({ status: "ok", timestamp: new Date().toISOString() });
+  res
+    .status(200)
+    .json({ status: "ok teste de log", timestamp: new Date().toISOString() });
 });
 
 router.post("/customer/create", async (req, res) => {
@@ -62,7 +64,10 @@ router.get("/customer/:cpf", async (req, res) => {
     }
     res
       .status(500)
-      .json({ message: "Erro deconhecido ao buscar cliente", error: error });
+      .json({
+        message: "Erro deconhecido ao buscar cliente",
+        error: `error => ${error}`,
+      });
   }
 });
 
