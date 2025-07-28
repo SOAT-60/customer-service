@@ -23,6 +23,8 @@ export class CreateCustomerUseCase implements ICreateCustomerUseCase {
 
       return await this.repository.save({ cpf, email, name });
     } catch (error) {
+      console.log("Erro => ", error);
+
       throw error;
     }
   }

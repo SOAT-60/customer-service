@@ -60,7 +60,9 @@ router.get("/customer/:cpf", async (req, res) => {
     if (error.isCustomError) {
       return res.status(error.status).json({ message: error.message });
     }
-    res.status(500).json({ message: "Erro deconhecido ao buscar cliente" });
+    res
+      .status(500)
+      .json({ message: "Erro deconhecido ao buscar cliente", error: error });
   }
 });
 

@@ -54,8 +54,14 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: dougb60/customer-service:latest
+          tags: dougb60/pedidos-service:latest,dougb60/customer-service:${{ github.sha }}
           no-cache: true
+
+      - name: Verify built image contents
+        run: |
+          docker pull dougb60/customer-service:latest
+          docker run --rm dougb60/customer-service:latest ls -la /app/dist
+          docker run --rm dougb60/customer-service:latest cat /app/dist/index.js | head -n 20
 
       - name: Deploy to EC2
         uses: appleboy/ssh-action@master
@@ -64,9 +70,10 @@ jobs:
           username: ec2-user
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            docker pull dougb60/customer-service:latest
+            docker pull dougb60/customer-service:latest || true
             docker stop customer-service || true
             docker rm customer-service || true
+            docker rmi dougb60/customer-service:latest || true
             docker run -d \
               --name customer-service \
               -p 3000:3000 \
