@@ -55,6 +55,7 @@ jobs:
         with:
           push: true
           tags: dougb60/customer-service:latest
+          no-cache: true
 
       - name: Deploy to EC2
         uses: appleboy/ssh-action@master

@@ -1,10 +1,9 @@
 import cors from "cors";
 import { Router } from "express";
-import { container } from "../infra/DI/container";
+import { ZodError } from "zod";
 import { CustomerController } from "../controller";
 import { CreateUserValidator } from "../dtos/create-customer.dto";
-import { ZodError } from "zod";
-import { CustomError } from "../errors/custom.error";
+import { container } from "../infra/DI/container";
 
 const router = Router();
 router.use(cors());
@@ -26,7 +25,6 @@ router.post("/customer/create", async (req, res) => {
       .status(200)
       .json({ message: "Cliente criado com sucesso!", response: customer });
   } catch (error: any) {
-    // Verifica se o erro tem as propriedades do CustomError
     if (
       error &&
       typeof error.status === "number" &&

@@ -8,20 +8,16 @@ import { CustomerRepository } from "../../../repository/customer.repository.inte
 import { CreateUserRequestDTO } from "../../../dtos/create-customer.dto";
 import { Customer } from "../../../models/customer.model";
 import { injectable } from "inversify";
+import { DynamoDocClient } from "../config";
 
 @injectable()
 export class CustomerRepositoryImpl implements CustomerRepository {
-  private tableName: string;
-  private client: DynamoDBDocumentClient;
+  private tableName: string = "customers";
 
-  constructor() {
-    this.tableName = "customers";
-    const ddbClient = new DynamoDBClient({ region: process.env.AWS_REGION });
-    this.client = DynamoDBDocumentClient.from(ddbClient);
-  }
+  constructor() {}
 
   async save(data: CreateUserRequestDTO) {
-    await this.client.send(
+    await DynamoDocClient.send(
       new PutCommand({
         TableName: this.tableName,
         Item: data,
@@ -32,7 +28,7 @@ export class CustomerRepositoryImpl implements CustomerRepository {
   }
 
   async findOne(key: { cpf: string }) {
-    const { Item } = await this.client.send(
+    const { Item } = await DynamoDocClient.send(
       new GetCommand({
         TableName: this.tableName,
         Key: key,
